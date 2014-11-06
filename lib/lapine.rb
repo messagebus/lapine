@@ -1,6 +1,7 @@
 require 'lapine/version'
 require 'lapine/configuration'
 require 'lapine/connection'
+require 'lapine/publisher'
 
 module Lapine
   class UndefinedConnection < StandardError; end
