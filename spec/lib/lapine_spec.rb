@@ -70,26 +70,44 @@ RSpec.describe Lapine do
         config.exchange_properties['my-exchange'] = {connection: 'my-connection', type: :thing, some: 'exchange-property'}
       end
 
-      it 'returns an exchange' do
-        expect(Lapine.find_exchange('my-exchange')).to eq(exchange)
+      context 'when exchanges has not been created' do
+        before do
+          allow(connection).to receive(:connected?).and_return(true)
+        end
+
+        it 'returns an exchange' do
+          expect(Lapine.find_exchange('my-exchange')).to eq(exchange)
+        end
+
+        it 'creates the exchange with its configured properties' do
+          Lapine.find_exchange('my-exchange')
+          expect(Bunny::Exchange).to have_received(:new).with(channel, :thing, 'my-exchange', some: 'exchange-property')
+        end
+
+        it 'starts a connection and creates a channel' do
+          Lapine.find_exchange('my-exchange')
+          expect(connection).to have_received(:start)
+          expect(connection).to have_received(:create_channel)
+        end
+
+        it 'only creates exchange once' do
+          Lapine.find_exchange('my-exchange')
+          Lapine.find_exchange('my-exchange')
+          expect(connection).to have_received(:start).once
+          expect(connection).to have_received(:create_channel).once
+        end
       end
 
-      it 'creates the exchange with its configured properties' do
-        Lapine.find_exchange('my-exchange')
-        expect(Bunny::Exchange).to have_received(:new).with(channel, :thing, 'my-exchange', some: 'exchange-property')
-      end
-
-      it 'starts a connection and creates a channel' do
-        Lapine.find_exchange('my-exchange')
-        expect(connection).to have_received(:start)
-        expect(connection).to have_received(:create_channel)
-      end
-
-      it 'only creates exchange once' do
-        Lapine.find_exchange('my-exchange')
-        Lapine.find_exchange('my-exchange')
-        expect(connection).to have_received(:start).once
-        expect(connection).to have_received(:create_channel).once
+      context 'with a created exchange' do
+        context 'that is closed' do
+          it 'establishes a new connection and exchange' do
+            Lapine.find_exchange('my-exchange')
+            allow(connection).to receive(:connected?).and_return(false)
+            Lapine.find_exchange('my-exchange')
+            expect(connection).to have_received(:start).twice
+            expect(connection).to have_received(:create_channel).twice
+          end
+        end
       end
     end
   end
