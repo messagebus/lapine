@@ -1,26 +1,79 @@
-# Lapine
+Lapine
+======
 
-TODO: Write a gem description
+Speak to RabbitMQ. This gem serves as a wrapper for publishing messages
+to RabbitMQ via the Bunny gem.
 
-## Installation
 
-Add this line to your application's Gemfile:
+## Configuration
+
+Initialization can be done inline in a daemon, or if used in Rails
+an initializer should be made at `config/initializers/lapine.rb`
+
+Register a connection. This connection should be given a name, and
+a hash of connection options that will be passed through to Bunny.
 
 ```ruby
-gem 'lapine'
+Lapine.add_connection 'my-connection', {
+  host: 'my-rabbitmq.mine.com',
+  port: 5672,
+  user: 'rabbit',
+  password: 'meow'
+}
 ```
 
-And then execute:
+Then register an exchange.
 
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install lapine
+```ruby
+Lapine.add_exchange 'efrafa', 
+  durable: true, 
+  connection: 'my-connection',  # required
+  type: 'topic'              # required
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+Define a class that configures which `exchange` is uses. This class
+must define `#to_hash`
+
+```ruby
+require 'lapine'
+
+class Worker
+  include Lapine::Publisher
+  
+  exchange 'efrafa'
+  
+  def initialize(action)
+    @action = action
+  end
+  
+  def to_hash
+    {
+      'action' => @action
+    }
+  end
+end
+```
+
+This class can be used to publish messages onto its exchange:
+
+```ruby
+Worker.new('dig').publish
+```
+
+Publishing can take a routing key for topic exchanges:
+
+```ruby
+Worker.new('dig').publish('rabbits.drones')
+```
+
+
+## But... WHY
+
+* This should be dead simple, but everything else was either too
+  complex or assumed very specific configurations different from what
+  we want.
 
 ## Contributing
 
