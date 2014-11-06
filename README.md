@@ -68,6 +68,9 @@ Publishing can take a routing key for topic exchanges:
 Worker.new('dig').publish('rabbits.drones')
 ```
 
+Note that the `#initialize` method and the contents of `#to_hash`
+are arbitrary.
+
 
 ## But... WHY
 
