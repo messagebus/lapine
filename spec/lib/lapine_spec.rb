@@ -46,6 +46,27 @@ RSpec.describe Lapine do
     end
   end
 
+  describe '.close_connections!' do
+    let(:connection1) { double('blah connection', close!: true, name: 'blah') }
+    let(:connection2) { double('blargh connection', close!: true, name: 'blargh') }
+
+    before do
+      config.exchanges['blah'] = connection1
+      config.exchanges['blargh'] = connection2
+    end
+
+    it 'calls close on each connection' do
+      Lapine.close_connections!
+      expect(connection1).to have_received(:close!)
+      expect(connection2).to have_received(:close!)
+    end
+
+    it 'clears the exchanges' do
+      Lapine.close_connections!
+      expect(Lapine.config.exchanges).to be_empty
+    end
+  end
+
   describe '.find_exchange' do
     before do
       allow(Bunny).to receive(:new).and_return(connection)

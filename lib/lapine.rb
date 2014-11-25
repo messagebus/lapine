@@ -29,4 +29,11 @@ module Lapine
     config.exchanges[name] = Lapine::Exchange.new(name, exchange)
     config.exchanges[name].exchange
   end
+
+  def self.close_connections!
+    config.exchanges.values.each do |exchange|
+      exchange.close!
+      config.exchanges.delete exchange.name
+    end
+  end
 end

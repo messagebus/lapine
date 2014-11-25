@@ -23,5 +23,9 @@ module Lapine
       channel = conn.create_channel
       @exchange = Bunny::Exchange.new(channel, exchange_type, name, props)
     end
+
+    def close!
+      @conn.close
+    end
   end
 end
