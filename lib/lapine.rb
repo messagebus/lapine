@@ -1,6 +1,6 @@
 require 'lapine/version'
 require 'lapine/configuration'
-require 'lapine/connection'
+require 'lapine/exchange'
 require 'lapine/publisher'
 
 module Lapine
@@ -26,7 +26,7 @@ module Lapine
     exchange = config.exchange_properties[name]
     raise UndefinedExchange unless exchange
     return config.exchanges[name].exchange if config.exchanges[name]
-    config.exchanges[name] = Lapine::Connection.new(name, exchange)
+    config.exchanges[name] = Lapine::Exchange.new(name, exchange)
     config.exchanges[name].exchange
   end
 end

@@ -1,7 +1,7 @@
 require 'bunny'
 
 module Lapine
-  class Connection
+  class Exchange
     attr_reader :conn, :name, :props, :connection_name, :exchange_type
 
     def initialize(name, properties)
