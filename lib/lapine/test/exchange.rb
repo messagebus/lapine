@@ -35,16 +35,21 @@ module Lapine
     end
 
     class FakeQueue
-      attr_reader :history
+      attr_reader :exchange, :message_history
 
       def bind(exchange)
-        @history = MessageHistory.new
-        exchange.bind history
+        @exchange = exchange
+        @message_history = MessageHistory.new
+        exchange.bind message_history
         self
       end
 
       def message_count
-        history.message_count
+        message_history.message_count
+      end
+
+      def messages
+        message_history.messages
       end
     end
 
@@ -76,6 +81,7 @@ module Lapine
       end
 
       def close!
+        @exchange = nil
         true
       end
     end

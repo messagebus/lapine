@@ -3,11 +3,11 @@ require 'lapine/test/exchange'
 module Lapine
   module Test
     module RSpecHelper
-      def self.setup(example)
-        example.allow(Lapine::Exchange).to(
-          example.receive(:new) { |name, properties|
+      def self.setup(_example = nil)
+        RSpec::Mocks::AllowanceTarget.new(Lapine::Exchange).to(
+          RSpec::Mocks::Matchers::Receive.new(:new, ->(name, properties) {
             Lapine::Test::Exchange.new(name, properties)
-          }
+          })
         )
       end
 
