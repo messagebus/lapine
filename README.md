@@ -78,6 +78,45 @@ are arbitrary.
   complex or assumed very specific configurations different from what
   we want.
 
+
+## Testing
+
+Lapine comes with helpers to stub out calls to RabbitMQ. This allows you
+to write tests using Lapine, without having to actually run RabbitMQ in
+your test suite.
+
+```ruby
+require 'lapine/test/rspec_helper'
+
+RSpec.configure do |config|
+  config.include Lapine::Test::RSpecHelper, fake_rabbit: true
+
+  config.before :each, :fake_rabbit do |example|
+    Lapine::Test::RSpecHelper.setup(example)
+  end
+
+  config.after :each, :fake_rabbit do
+    Lapine::Test::RSpecHelper.teardown
+  end
+end
+```
+
+An example test would look something like this:
+
+```ruby
+RSpec.describe MyPublisher, fake_rabbit: true do
+  let(:exchange) { Lapine.find_exchange('my.topic') }
+  let(:queue) { exchange.channel.queue.bind(exchange) }
+
+  describe 'publishing' do
+    it 'adds a message to a queue' do
+      MyPublisher.new.publish('my.things')
+      expect(queue.message_count).to eq(1)
+    end
+  end
+end
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/lapine/fork )
