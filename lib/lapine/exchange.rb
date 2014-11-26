@@ -25,7 +25,7 @@ module Lapine
     end
 
     def close!
-      @conn.close
+      conn.close if conn.connected?
     end
   end
 end
