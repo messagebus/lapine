@@ -1,0 +1,1 @@
+require 'lapine/consumer/runner'

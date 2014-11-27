@@ -1,0 +1,24 @@
+connection:
+  host: '127.0.0.1'
+  port: 5672
+  ssl: false
+  vhost: '/'
+  username: 'guest'
+  password: 'guest'
+
+require:
+  - example/consumer_handler
+
+topics:
+  - lapine.topic
+
+queues:
+  - q: handler
+    topic: lapine.topic
+    routing_key: stuff
+    handlers:
+      - ConsumerHandler
+
+
+
+
