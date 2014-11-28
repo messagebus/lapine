@@ -6,7 +6,7 @@ module Lapine
     class Connection
       attr_reader :connection, :channel, :exchange
 
-      def initialize(config, topic = "wnl.topic")
+      def initialize(config, topic)
         @connection = AMQP.connect(config.connection_properties)
         @channel = AMQP::Channel.new(connection)
         @exchange = AMQP::Exchange.new(channel, :topic, topic, durable: true)

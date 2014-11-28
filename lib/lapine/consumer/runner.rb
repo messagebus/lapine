@@ -4,13 +4,14 @@ require 'eventmachine'
 require 'logger'
 require 'lapine/consumer/config'
 require 'lapine/consumer/connection'
+require 'lapine/consumer/environment'
 require 'lapine/consumer/topology'
 require 'lapine/consumer/dispatcher'
 
 module Lapine
   module Consumer
     class Runner
-      attr_reader :argv, :message_count
+      attr_reader :argv
 
       def initialize(argv)
         @argv = argv
@@ -19,11 +20,10 @@ module Lapine
 
       def run
         handle_signals!
-        logger.info 'starting Messagebus::Consumer'
+        Consumer::Environment.new(config).load!
+        logger.info 'starting Lapine::Consumer'
 
         EventMachine.run do
-          conn = Lapine::Consumer::Connection.new(config)
-
           topology.each_binding do |q, conn, routing_key, classes|
             queue = conn.channel.queue(q).bind(conn.exchange, routing_key: routing_key)
             queue.subscribe(ack: true) do |metadata, payload|
@@ -31,18 +31,21 @@ module Lapine
                 Lapine::Consumer::Dispatcher.new(clazz, payload, metadata, logger).dispatch
               end
 
-              message_count += 1
+              @message_count += 1 if config.debug?
 
               metadata.ack
             end
           end
 
-          EventMachine.add_periodic_timer(10) do
-            logger.info "Messagebus::Consumer messages processed=#{message_count}"
+          if config.debug?
+            EventMachine.add_periodic_timer(10) do
+              logger.info "Lapine::Consumer messages processed=#{@message_count}"
+              @message_count = 0
+            end
           end
         end
 
-        logger.warn 'exiting Messagebus::Consumer'
+        logger.warn 'exiting Lapine::Consumer'
       end
 
       def config
@@ -50,7 +53,7 @@ module Lapine
       end
 
       def topology
-        @topology ||= ::Lapine::Consumer::Topology.new(config)
+        @topology ||= ::Lapine::Consumer::Topology.new(config, logger)
       end
 
       def logger

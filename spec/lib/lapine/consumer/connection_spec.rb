@@ -15,13 +15,8 @@ RSpec.describe Lapine::Consumer::Connection do
     end
 
     it "Builds amqp objects" do
-      expect(AMQP::Exchange).to receive(:new).with(channel, :topic, 'wnl.topic', durable: true)
-      described_class.new(config)
-    end
-
-    it "overides topic" do
-      expect(AMQP::Exchange).to receive(:new).with(channel, :topic, 'wnl.topic.newone', durable: true)
-      described_class.new(config, 'wnl.topic.newone')
+      expect(AMQP::Exchange).to receive(:new).with(channel, :topic, 'thing.topic', durable: true)
+      described_class.new(config, 'thing.topic')
     end
   end
 end

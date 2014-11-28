@@ -1,10 +1,12 @@
 require 'oj'
+require 'lapine/dtrace'
 
 module Lapine
   module Consumer
     class Dispatcher
       class DefaultErrorHandler
         def call(e, data)
+          logger.info "Lapine::Dispatcher unable to dispatch, #{e.message}, data: #{data}"
         end
       end
 
@@ -26,6 +28,7 @@ module Lapine
       end
 
       def dispatch
+        Lapine::DTrace.fire!(:dispatch_enter, delegate_class.name, raw_payload)
         begin
           json = Oj.load(raw_payload)
           with_timed_logging(json) { do_dispatch(json) }
@@ -34,6 +37,7 @@ module Lapine
         rescue StandardError => e
           self.class.error_handler.call(e, json)
         end
+        Lapine::DTrace.fire!(:dispatch_enter, delegate_class.name, raw_payload)
       end
 
       private

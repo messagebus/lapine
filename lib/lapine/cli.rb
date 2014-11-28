@@ -11,7 +11,7 @@ module Lapine
       case command
       when 'consume'
         require 'lapine/consumer'
-        Lapine::Consumer::Runner.new(argv).run
+        ::Lapine::Consumer::Runner.new(argv).run
       else
         usage
       end

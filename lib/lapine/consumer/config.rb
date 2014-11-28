@@ -50,6 +50,11 @@ module Lapine
         long: '--password PASSWORD',
         description: 'RabbitMQ password (default guest)'
 
+      option :debug,
+        long: '--debug',
+        description: 'More verbose (and possibly non-threadsafe) log statements',
+        default: false
+
       option :help,
         short: '-?',
         long: '--help',
@@ -64,6 +69,10 @@ module Lapine
         self
       end
 
+      def debug?
+        config[:debug]
+      end
+
       def logfile
         config[:logfile]
       end
@@ -74,6 +83,10 @@ module Lapine
 
       def queues
         yaml_config['queues']
+      end
+
+      def require
+        yaml_config['require'] || []
       end
 
       def topics

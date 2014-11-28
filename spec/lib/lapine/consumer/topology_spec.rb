@@ -26,10 +26,16 @@ RSpec.describe Lapine::Consumer::Topology do
     {}
   }
   let(:config) do
-    double('config', topics: topics, queues: queues, connection_properties: connection_properties)
+    double('config',
+           topics: topics,
+           queues: queues,
+           connection_properties: connection_properties,
+           debug?: debug)
   end
 
-  let(:topology) { Lapine::Consumer::Topology.new(config) }
+  subject(:topology) { Lapine::Consumer::Topology.new(config, logger) }
+  let(:debug) { false }
+  let(:logger) { nil }
 
   describe "#each_topic" do
     it "yields correct dount" do
@@ -43,6 +49,7 @@ RSpec.describe Lapine::Consumer::Topology do
 
   describe "#each_binding" do
     let(:conn) { double('connection') }
+
     before do
       allow(Lapine::Consumer::Connection).to receive(:new) { conn }
     end
@@ -52,12 +59,23 @@ RSpec.describe Lapine::Consumer::Topology do
     end
 
     it "yields expected arguments" do
-      expect do |b|
+      expect { |b|
         topology.each_binding(&b)
-      end.to yield_with_args("store.buyable",
+      }.to yield_with_args("store.buyable",
         conn,
         "store.buyable.update",
         [MessageBusTest::Clazz])
+    end
+
+    context 'with a logger and debug mode' do
+      let(:debug) { true }
+      let(:logger) { double('logger', info: true) }
+
+      it 'logs each connection' do
+        topology.each_binding {}
+        expect(logger).to have_received(:info).with("Connecting to RabbiMQ: topic: a.topic, #{config.connection_properties}")
+        expect(logger).to have_received(:info).with("Connecting to RabbiMQ: topic: b.topic, #{config.connection_properties}")
+      end
     end
   end
 end

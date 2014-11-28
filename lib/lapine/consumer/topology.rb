@@ -2,7 +2,7 @@ require 'lapine/consumer/connection'
 
 module Lapine
   module Consumer
-    class Topology < Struct.new(:config)
+    class Topology < Struct.new(:config, :logger)
 
       def each_binding
         config.queues.each do |node|
@@ -28,10 +28,17 @@ module Lapine
       def get_conn(name)
         @cons ||= {}.tap do |cons|
           each_topic do |topic|
-            cons[topic] = Lapine::Consumer::Connection.new(config.connection_properties, topic)
+            debug "Connecting to RabbiMQ: topic: #{topic}, #{config.connection_properties}"
+            cons[topic] = Lapine::Consumer::Connection.new(config, topic)
           end
         end
         @cons[name]
+      end
+
+      def debug(msg)
+        return unless config.debug?
+        return unless logger
+        logger.info msg
       end
     end
   end

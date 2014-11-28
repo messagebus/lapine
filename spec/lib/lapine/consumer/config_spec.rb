@@ -12,7 +12,15 @@ RSpec.describe Lapine::Consumer::Config do
     allow(YAML).to receive(:load_file).with('/path/to/config.yml').and_return(config_from_file)
   end
 
+  describe '#load' do
+    it 'returns self' do
+      expect(config.load(argv)).to eq(config)
+    end
+  end
+
   describe '#connection_properties' do
+    before { config.load(argv) }
+
     let(:connection_properties) { config.connection_properties }
 
     describe 'host' do
