@@ -11,6 +11,10 @@ module Lapine
         @channel = AMQP::Channel.new(connection)
         @exchange = AMQP::Exchange.new(channel, :topic, topic, durable: true)
       end
+
+      def close!
+        @connection.close if @connection.connected?
+      end
     end
   end
 end

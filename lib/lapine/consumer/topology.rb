@@ -23,6 +23,13 @@ module Lapine
         end
       end
 
+      def close!
+        return unless @cons
+        @cons.values.each do |conn|
+          conn.close!
+        end
+      end
+
       private
 
       def get_conn(name)
