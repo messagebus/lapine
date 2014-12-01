@@ -29,7 +29,7 @@ RSpec.describe Lapine::Consumer::Config do
       end
 
       context 'with connection info in file' do
-        let(:config_from_file) { { 'connection' => { 'host' => '1.1.1.1' } } }
+        let(:config_from_file) { {'connection' => {'host' => '1.1.1.1'}} }
 
         it 'uses the config file info' do
           expect(connection_properties[:host]).to eq('1.1.1.1')
@@ -38,7 +38,7 @@ RSpec.describe Lapine::Consumer::Config do
 
       context 'with command line arg' do
         let(:argv) { %w(--host 2.2.2.2 -c /path/to/config.yml) }
-        let(:config_from_file) { { 'connection' => { 'host' => '1.1.1.1' } } }
+        let(:config_from_file) { {'connection' => {'host' => '1.1.1.1'}} }
 
         it 'prefers the cli' do
           expect(connection_properties[:host]).to eq('2.2.2.2')
@@ -52,7 +52,7 @@ RSpec.describe Lapine::Consumer::Config do
       end
 
       context 'with connection info in file' do
-        let(:config_from_file) { { 'connection' => { 'port' => 5673 } } }
+        let(:config_from_file) { {'connection' => {'port' => 5673}} }
 
         it 'uses the config file info' do
           expect(connection_properties[:port]).to eq(5673)
@@ -61,7 +61,7 @@ RSpec.describe Lapine::Consumer::Config do
 
       context 'with command line arg' do
         let(:argv) { %w(--port 5674 -c /path/to/config.yml) }
-        let(:config_from_file) { { 'connection' => { 'port' => 5673 } } }
+        let(:config_from_file) { {'connection' => {'port' => 5673}} }
 
         it 'prefers the cli' do
           expect(connection_properties[:port]).to eq(5674)
@@ -75,7 +75,7 @@ RSpec.describe Lapine::Consumer::Config do
       end
 
       context 'with connection info in file' do
-        let(:config_from_file) { { 'connection' => { 'ssl' => true } } }
+        let(:config_from_file) { {'connection' => {'ssl' => true}} }
 
         it 'uses the config file info' do
           expect(connection_properties[:ssl]).to be(true)
@@ -84,7 +84,7 @@ RSpec.describe Lapine::Consumer::Config do
 
       context 'with command line arg' do
         let(:argv) { %w(--ssl -c /path/to/config.yml) }
-        let(:config_from_file) { { 'connection' => { 'ssl' => false } } }
+        let(:config_from_file) { {'connection' => {'ssl' => false}} }
 
         it 'prefers the cli' do
           expect(connection_properties[:ssl]).to be(true)
@@ -98,7 +98,7 @@ RSpec.describe Lapine::Consumer::Config do
       end
 
       context 'with connection info in file' do
-        let(:config_from_file) { { 'connection' => { 'vhost' => '/blah' } } }
+        let(:config_from_file) { {'connection' => {'vhost' => '/blah'}} }
 
         it 'uses the config file info' do
           expect(connection_properties[:vhost]).to eq('/blah')
@@ -107,7 +107,7 @@ RSpec.describe Lapine::Consumer::Config do
 
       context 'with command line arg' do
         let(:argv) { %w(--vhost /argh -c /path/to/config.yml) }
-        let(:config_from_file) { { 'connection' => { 'vhost' => '/blah' } } }
+        let(:config_from_file) { {'connection' => {'vhost' => '/blah'}} }
 
         it 'prefers the cli' do
           expect(connection_properties[:vhost]).to eq('/argh')
@@ -121,7 +121,7 @@ RSpec.describe Lapine::Consumer::Config do
       end
 
       context 'with connection info in file' do
-        let(:config_from_file) { { 'connection' => { 'username' => 'Hrairoo' } } }
+        let(:config_from_file) { {'connection' => {'username' => 'Hrairoo'}} }
 
         it 'uses the config file info' do
           expect(connection_properties[:username]).to eq('Hrairoo')
@@ -130,7 +130,7 @@ RSpec.describe Lapine::Consumer::Config do
 
       context 'with command line arg' do
         let(:argv) { %w(--username Thlayli -c /path/to/config.yml) }
-        let(:config_from_file) { { 'connection' => { 'username' => 'Hrairoo' } } }
+        let(:config_from_file) { {'connection' => {'username' => 'Hrairoo'}} }
 
         it 'prefers the cli' do
           expect(connection_properties[:username]).to eq('Thlayli')
@@ -144,7 +144,7 @@ RSpec.describe Lapine::Consumer::Config do
       end
 
       context 'with connection info in file' do
-        let(:config_from_file) { { 'connection' => { 'password' => 'flayrah' } } }
+        let(:config_from_file) { {'connection' => {'password' => 'flayrah'}} }
 
         it 'uses the config file info' do
           expect(connection_properties[:password]).to eq('flayrah')
@@ -153,7 +153,7 @@ RSpec.describe Lapine::Consumer::Config do
 
       context 'with command line arg' do
         let(:argv) { %w(--password pfeffa -c /path/to/config.yml) }
-        let(:config_from_file) { { 'connection' => { 'password' => 'flayrah' } } }
+        let(:config_from_file) { {'connection' => {'password' => 'flayrah'}} }
 
         it 'prefers the cli' do
           expect(connection_properties[:password]).to eq('pfeffa')
