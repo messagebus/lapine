@@ -37,7 +37,7 @@ module Lapine
         rescue StandardError => e
           self.class.error_handler.call(e, json)
         end
-        Lapine::DTrace.fire!(:dispatch_enter, delegate_class.name, raw_payload)
+        Lapine::DTrace.fire!(:dispatch_return, delegate_class.name, raw_payload)
       end
 
       private
