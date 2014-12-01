@@ -161,4 +161,18 @@ RSpec.describe Lapine::Consumer::Config do
       end
     end
   end
+
+  describe '#transient?' do
+    it 'is false by default' do
+      expect(config.transient?).to be false
+    end
+
+    context 'with --transient' do
+      let(:argv) { %w(--transient -c /path/to/config.yml) }
+
+      it 'is true' do
+        expect(config.transient?).to be true
+      end
+    end
+  end
 end

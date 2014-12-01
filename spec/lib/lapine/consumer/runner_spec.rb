@@ -34,7 +34,8 @@ RSpec.describe Lapine::Consumer::Runner do
     require: [],
     queues: queues,
     topics: ['testing.topic'],
-    debug?: true) }
+    debug?: true,
+    transient?: true) }
   let(:connection_properties) { {host: '127.0.0.1', port: 5672, ssl: false, vhost: '/', username: 'guest', password: 'guest'} }
   let(:message) { Oj.dump({'pay' => 'load'}) }
 

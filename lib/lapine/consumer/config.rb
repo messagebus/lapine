@@ -50,6 +50,11 @@ module Lapine
         long: '--password PASSWORD',
         description: 'RabbitMQ password (default guest)'
 
+      option :transient,
+        long: '--transient',
+        description: 'Auto-delete queues when workers stop',
+        default: false
+
       option :debug,
         long: '--debug',
         description: 'More verbose (and possibly non-threadsafe) log statements',
@@ -87,6 +92,10 @@ module Lapine
 
       def topics
         yaml_config['topics']
+      end
+
+      def transient?
+        config[:transient]
       end
 
       def connection_properties

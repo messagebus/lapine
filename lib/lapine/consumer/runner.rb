@@ -23,9 +23,10 @@ module Lapine
         Consumer::Environment.new(config).load!
         logger.info 'starting Lapine::Consumer'
 
+        @queue_properties = queue_properties
         EventMachine.run do
           topology.each_binding do |q, conn, routing_key, classes|
-            queue = conn.channel.queue(q).bind(conn.exchange, routing_key: routing_key)
+            queue = conn.channel.queue(q, @queue_properties).bind(conn.exchange, routing_key: routing_key)
             queue.subscribe(ack: true) do |metadata, payload|
               classes.each do |clazz|
                 Lapine::Consumer::Dispatcher.new(clazz, payload, metadata, logger).dispatch
@@ -58,6 +59,12 @@ module Lapine
 
       def logger
         @logger ||= config.logfile ? Logger.new(config.logfile) : Logger.new(STDOUT)
+      end
+
+      def queue_properties
+        {}.tap do |props|
+          props.merge!(auto_delete: true) if config.transient?
+        end
       end
 
       def handle_signals!
