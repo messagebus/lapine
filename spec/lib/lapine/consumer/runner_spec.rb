@@ -7,60 +7,51 @@ RSpec.describe Lapine::Consumer::Runner do
   include EM::SpecHelper
 
   class FakerHandler
-    def self.handle_messagebus_payload(payload, metadata)
+    def self.handle_lapine_payload(payload, metadata)
     end
   end
 
   subject(:runner) { Lapine::Consumer::Runner.new(argv) }
   let(:argv) { [] }
-  let(:topology) do
-    {
-      'topics' =>
-        [
-          'testing.topic'
-        ],
-      'queues' =>
-        [
-          {
-            'q' => 'testing.test',
-            'topic' => 'testing.topic',
-            'routing_key' => 'testing.update',
-            'handlers' =>
-              [
-                'MessagebusTest::Faker'
-              ]
-          }
-        ]
-    }
+  let(:queues) do
+    [
+      {
+        'q' => 'testing.test',
+        'topic' => 'testing.topic',
+        'routing_key' => 'testing.update',
+        'handlers' =>
+          [
+            'FakerHandler'
+          ]
+      }
+    ]
   end
 
-  let(:config) { double('config', 
-                        logfile: '/dev/null',
-                        yaml_config: 'fakefil',
-                        connection_properties: connection_properties,
-                        require: [],
-                        queues: [],
-                        debug?: false) }
-  let(:connection_properties) { { host: '127.0.0.1', port: 5672, ssl: false, vhost: '/', username: 'guest', password: 'guest' } }
+  let(:config) { double('config',
+    logfile: '/dev/null',
+    yaml_config: 'fakefil',
+    connection_properties: connection_properties,
+    require: [],
+    queues: queues,
+    topics: ['testing.topic'],
+    debug?: true) }
+  let(:connection_properties) { {host: '127.0.0.1', port: 5672, ssl: false, vhost: '/', username: 'guest', password: 'guest'} }
   let(:message) { Oj.dump({'pay' => 'load'}) }
 
   describe '#run' do
     before do
       allow(runner).to receive(:config).and_return(config)
+      allow(runner).to receive(:topology).and_return(::Lapine::Consumer::Topology.new(config, runner.logger))
       allow(runner).to receive(:handle_signals!)
     end
 
     it 'sends a message to handler' do
-      expect(FakerHandler).to receive(:handle_messagebus_payload).twice
+      expect(FakerHandler).to receive(:handle_lapine_payload).twice
       em do
         subject.run
-        # This is not ideal. We should be able to get a callback when rabbit in configured
-        # However not sure how to do this. 1 sec is more then ample
-        EventMachine.add_timer(1.0) do
-          conn = Lapine::Consumer::Connection.new(config, 'testing.topic')
-          conn.exchange.publish(message, routing_key: 'testing.update')
-          conn.exchange.publish(message, routing_key: 'testing.update')
-        end
+        conn = Lapine::Consumer::Connection.new(config, 'testing.topic')
+        conn.exchange.publish(message, routing_key: 'testing.update')
+        conn.exchange.publish(message, routing_key: 'testing.update')
         EventMachine.add_timer(2.0) { done }
       end
     end
