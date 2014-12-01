@@ -46,7 +46,7 @@ RSpec.describe Lapine::Consumer::Dispatcher do
       context 'with invalid json' do
         let(:json) { 'oh boy I am not actually JSON' }
 
-        it 'notifies new relic with the raw payload' do
+        it 'notifies the error handler with the raw payload' do
           dispatcher.dispatch
           expect(caught_errors).to include([an_instance_of(Oj::ParseError), json])
         end
@@ -55,7 +55,7 @@ RSpec.describe Lapine::Consumer::Dispatcher do
       context 'with any other error' do
         before { allow(dispatcher).to receive(:do_dispatch).and_raise(ArgumentError) }
 
-        it 'notifies new relic with the parsed json' do
+        it 'notifies error handler with the parsed json' do
           dispatcher.dispatch
           expect(caught_errors).to include([an_instance_of(ArgumentError), hash])
         end
