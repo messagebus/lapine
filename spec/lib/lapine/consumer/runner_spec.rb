@@ -16,7 +16,7 @@ RSpec.describe Lapine::Consumer::Runner do
   let(:queues) do
     [
       {
-        'q' => 'testing.test',
+        'q' => '',
         'topic' => 'testing.topic',
         'routing_key' => 'testing.update',
         'handlers' =>
@@ -50,10 +50,12 @@ RSpec.describe Lapine::Consumer::Runner do
       expect(FakerHandler).to receive(:handle_lapine_payload).twice
       em do
         subject.run
-        conn = Lapine::Consumer::Connection.new(config, 'testing.topic')
-        conn.exchange.publish(message, routing_key: 'testing.update')
-        conn.exchange.publish(message, routing_key: 'testing.update')
-        EventMachine.add_timer(2.0) { done }
+        EventMachine.add_timer(0.5) {
+          conn = Lapine::Consumer::Connection.new(config, 'testing.topic')
+          conn.exchange.publish(message, routing_key: 'testing.update')
+          conn.exchange.publish(message, routing_key: 'testing.update')
+        }
+        EventMachine.add_timer(1.0) { done }
       end
     end
   end
