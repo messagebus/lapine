@@ -77,10 +77,6 @@ module Lapine
         config[:logfile]
       end
 
-      def yaml_config
-        @yaml ||= YAML.load_file(config[:config_file])
-      end
-
       def queues
         yaml_config['queues']
       end
@@ -121,6 +117,10 @@ module Lapine
           username: config[:username],
           password: config[:password]
         }.delete_if { |k, v| v.nil? }
+      end
+
+      def yaml_config
+        @yaml ||= YAML.load_file(config[:config_file])
       end
     end
   end
