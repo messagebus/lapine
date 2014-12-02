@@ -2,7 +2,8 @@ Lapine
 ======
 
 Speak to RabbitMQ. This gem serves as a wrapper for publishing messages
-to RabbitMQ via the Bunny gem.
+to RabbitMQ via the Bunny gem, and for consuming messages using the AMQP
+gem.
 
 
 ## Configuration
@@ -31,7 +32,7 @@ Lapine.add_exchange 'efrafa',
   type: 'topic'              # required
 ```
 
-## Usage
+## Publisher Usage
 
 Define a class that configures which `exchange` is used. This class
 must define `#to_hash`
@@ -70,6 +71,12 @@ Worker.new('dig').publish('rabbits.drones')
 
 Note that the `#initialize` method and the contents of `#to_hash`
 are arbitrary.
+
+
+## Consumer Usage
+
+Please see the Lapine wiki for documentation on defining and configuring
+consumers.
 
 
 ## But... WHY
