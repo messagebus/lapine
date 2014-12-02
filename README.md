@@ -33,7 +33,7 @@ Lapine.add_exchange 'efrafa',
 
 ## Usage
 
-Define a class that configures which `exchange` is uses. This class
+Define a class that configures which `exchange` is used. This class
 must define `#to_hash`
 
 ```ruby
