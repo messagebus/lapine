@@ -17,7 +17,7 @@ module Lapine
       option :logfile,
         short: '-l LOGFILE',
         long: '--logfile LOGFILE',
-        description: 'where to log consumer info',
+        description: 'where to log consumer info (default to STDOUT)',
         required: false
 
       option :host,
