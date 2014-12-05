@@ -12,10 +12,8 @@ RSpec.describe Lapine::Consumer::Dispatcher do
 
   let(:caught_errors) { [] }
 
-  before do
-    Lapine::Consumer::Dispatcher.error_handler = ->(error, data) {
-      caught_errors << [error, data]
-    }
+  after do
+    Lapine::Consumer::Dispatcher.error_handler = nil
   end
 
   describe "#delegation" do
@@ -43,23 +41,42 @@ RSpec.describe Lapine::Consumer::Dispatcher do
     end
 
     describe 'error cases' do
-      context 'with invalid json' do
-        let(:json) { 'oh boy I am not actually JSON' }
 
-        it 'notifies the error handler with the raw payload' do
-          dispatcher.dispatch
-          expect(caught_errors).to include([an_instance_of(Oj::ParseError), json])
+      context 'custom error handler' do
+        before do
+          Lapine::Consumer::Dispatcher.error_handler = ->(error, data) {
+            caught_errors << [error, data]
+          }
+        end
+        context 'with invalid json' do
+          let(:json) { 'oh boy I am not actually JSON' }
+
+          it 'notifies the error handler with the raw payload' do
+            dispatcher.dispatch
+            expect(caught_errors).to include([an_instance_of(Oj::ParseError), json])
+          end
+        end
+
+        context 'with any other error' do
+          before { allow(dispatcher).to receive(:do_dispatch).and_raise(ArgumentError) }
+
+          it 'notifies error handler with the parsed json' do
+            dispatcher.dispatch
+            expect(caught_errors).to include([an_instance_of(ArgumentError), hash])
+          end
         end
       end
 
-      context 'with any other error' do
+      context 'default error handler' do
         before { allow(dispatcher).to receive(:do_dispatch).and_raise(ArgumentError) }
 
-        it 'notifies error handler with the parsed json' do
+        it 'notifies default error handler' do
+          expect($stderr).to receive(:puts)
           dispatcher.dispatch
-          expect(caught_errors).to include([an_instance_of(ArgumentError), hash])
         end
       end
+
+
     end
   end
 end

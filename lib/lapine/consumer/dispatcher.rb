@@ -5,8 +5,9 @@ module Lapine
   module Consumer
     class Dispatcher
       class DefaultErrorHandler
+
         def call(e, data)
-          logger.info "Lapine::Dispatcher unable to dispatch, #{e.message}, data: #{data}"
+          $stderr.puts "Lapine::Dispatcher unable to dispatch, #{e.message}, data: #{data}"
         end
       end
 
@@ -47,7 +48,7 @@ module Lapine
         ret = yield
         time_end = Time.now
         duration = (time_end - time) * 1000
-        logger.info  "Processing rabbit message handler:#{delegate_class.name} duration(ms):#{duration} payload:#{json.inspect}"
+        logger.info "Processing rabbit message handler:#{delegate_class.name} duration(ms):#{duration} payload:#{json.inspect}"
         ret
       end
 
