@@ -83,7 +83,7 @@ module Lapine
       end
 
       def queues
-        yaml_config['queues']
+        yaml_config['queues'] || []
       end
 
       def require

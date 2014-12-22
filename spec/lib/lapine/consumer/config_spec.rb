@@ -162,6 +162,14 @@ RSpec.describe Lapine::Consumer::Config do
     end
   end
 
+  describe '#queues' do
+    let(:config_from_file) { {} }
+
+    it 'defaults to empty array' do
+      expect(config.queues).to eq([])
+    end
+  end
+
   describe '#transient?' do
     it 'is false by default' do
       expect(config.transient?).to be false
