@@ -1,7 +1,7 @@
 require 'amqp'
 require 'digest'
 require 'eventmachine'
-require 'logger'
+require 'lapine/annotated_logger'
 require 'lapine/consumer/config'
 require 'lapine/consumer/connection'
 require 'lapine/consumer/environment'
@@ -16,6 +16,7 @@ module Lapine
       def initialize(argv)
         @argv = argv
         @message_count = 0
+        @running_message_count = 0
       end
 
       def run
@@ -32,15 +33,17 @@ module Lapine
                 Lapine::Consumer::Dispatcher.new(clazz, payload, metadata, logger).dispatch
               end
 
-              @message_count += 1 if config.debug?
-
+              if config.debug?
+                @message_count += 1
+                @running_message_count += 1
+              end
               metadata.ack
             end
           end
 
           if config.debug?
             EventMachine.add_periodic_timer(10) do
-              logger.info "Lapine::Consumer messages processed=#{@message_count}"
+              logger.info "Lapine::Consumer messages processed=#{@message_count} running_count=#{@running_message_count}"
               @message_count = 0
             end
           end
@@ -58,7 +61,7 @@ module Lapine
       end
 
       def logger
-        @logger ||= config.logfile ? Logger.new(config.logfile) : Logger.new(STDOUT)
+        @logger ||= config.logfile ? AnnotatedLogger.new(config.logfile) : AnnotatedLogger.new(STDOUT)
       end
 
       def queue_properties

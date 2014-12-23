@@ -2,6 +2,7 @@ require 'lapine/version'
 require 'lapine/configuration'
 require 'lapine/exchange'
 require 'lapine/publisher'
+require 'lapine/annotated_logger'
 
 module Lapine
   class UndefinedConnection < StandardError; end

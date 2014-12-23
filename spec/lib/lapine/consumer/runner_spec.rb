@@ -27,8 +27,14 @@ RSpec.describe Lapine::Consumer::Runner do
     ]
   end
 
+  after :each do
+    # Comment this out to see the log in the top level folder.
+    `rm -f #{logfile}`
+  end
+
+  let(:logfile) { File.expand_path('../../../../../lapine.log', __FILE__) }
   let(:config) { double('config',
-    logfile: '/dev/null',
+    logfile: logfile,
     yaml_config: 'fakefil',
     connection_properties: connection_properties,
     require: [],
