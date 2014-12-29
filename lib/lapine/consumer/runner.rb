@@ -61,7 +61,7 @@ module Lapine
       end
 
       def logger
-        @logger ||= config.logfile ? AnnotatedLogger.new(config.logfile) : AnnotatedLogger.new(STDOUT)
+        @logger ||= config.logfile ? ::Lapine::AnnotatedLogger.new(config.logfile) : ::Lapine::AnnotatedLogger.new(STDOUT)
       end
 
       def queue_properties
