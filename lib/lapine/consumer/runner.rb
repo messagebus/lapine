@@ -38,6 +38,8 @@ module Lapine
                 @running_message_count += 1
               end
               metadata.ack
+
+              EventMachine.stop_event_loop if should_exit?
             end
           end
 
@@ -46,6 +48,10 @@ module Lapine
               logger.info "Lapine::Consumer messages processed=#{@message_count} running_count=#{@running_message_count}"
               @message_count = 0
             end
+          end
+
+          EventMachine.add_periodic_timer(5) do
+            EventMachine.stop_event_loop if should_exit?
           end
         end
 
@@ -70,9 +76,14 @@ module Lapine
         end
       end
 
+      def should_exit?
+        $STOP_LAPINE_CONSUMER
+      end
+
       def handle_signals!
+        $STOP_LAPINE_CONSUMER = false
         Signal.trap('INT') { EventMachine.stop }
-        Signal.trap('TERM') { EventMachine.stop }
+        Signal.trap('TERM') { $STOP_LAPINE_CONSUMER = true }
       end
     end
   end
