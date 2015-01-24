@@ -75,8 +75,8 @@ are arbitrary.
 
 ## Consumer Usage
 
-Please see the Lapine wiki for documentation on defining and configuring
-consumers.
+Please see the [Lapine wiki](https://github.com/wanelo/lapine/wiki) for documentation
+on defining and configuring consumers.
 
 
 ## But... WHY
