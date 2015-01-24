@@ -15,7 +15,7 @@ module Lapine
 
       def set_environment
         ENV['RAILS_ENV'] ||= 'development'
-        ENV['RACK_ENV'] = ENV['RAILS_ENV']
+        ENV['RACK_ENV'] ||= ENV['RAILS_ENV']
       end
 
       def load_rails
