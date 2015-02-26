@@ -44,8 +44,8 @@ RSpec.describe Lapine::Consumer::Dispatcher do
 
       context 'custom error handler' do
         before do
-          Lapine::Consumer::Dispatcher.error_handler = ->(error, data) {
-            caught_errors << [error, data]
+          Lapine::Consumer::Dispatcher.error_handler = ->(error, data, metadata) {
+            caught_errors << [error, data, metadata]
           }
         end
         context 'with invalid json' do
@@ -53,7 +53,7 @@ RSpec.describe Lapine::Consumer::Dispatcher do
 
           it 'notifies the error handler with the raw payload' do
             dispatcher.dispatch
-            expect(caught_errors).to include([an_instance_of(Oj::ParseError), json])
+            expect(caught_errors).to include([an_instance_of(Oj::ParseError), json, metadata])
           end
         end
 
@@ -62,7 +62,7 @@ RSpec.describe Lapine::Consumer::Dispatcher do
 
           it 'notifies error handler with the parsed json' do
             dispatcher.dispatch
-            expect(caught_errors).to include([an_instance_of(ArgumentError), hash])
+            expect(caught_errors).to include([an_instance_of(ArgumentError), hash, metadata])
           end
         end
       end

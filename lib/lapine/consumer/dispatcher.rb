@@ -6,7 +6,7 @@ module Lapine
     class Dispatcher
       class DefaultErrorHandler
 
-        def call(e, data)
+        def call(e, data, _metadata)
           $stderr.puts "Lapine::Dispatcher unable to dispatch, #{e.message}, data: #{data}"
         end
       end
@@ -34,9 +34,9 @@ module Lapine
           json = Oj.load(raw_payload)
           with_timed_logging(json) { do_dispatch(json) }
         rescue Oj::Error => e
-          self.class.error_handler.call(e, raw_payload)
+          self.class.error_handler.call(e, raw_payload, metadata)
         rescue StandardError => e
-          self.class.error_handler.call(e, json)
+          self.class.error_handler.call(e, json, metadata)
         end
         Lapine::DTrace.fire!(:dispatch_return, delegate_class.name, raw_payload)
       end
