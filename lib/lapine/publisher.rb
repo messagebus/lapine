@@ -8,7 +8,7 @@ module Lapine
     end
 
     def publish(routing_key = nil)
-      Lapine.find_exchange(self.class.instance_variable_get(:@exchange)).publish(to_json, routing_key: routing_key)
+      Lapine.find_exchange(self.class.current_lapine_exchange).publish(to_json, routing_key: routing_key)
     end
 
     def to_json
@@ -17,7 +17,11 @@ module Lapine
 
     module ClassMethods
       def exchange(name)
-        @exchange = name
+        @lapine_exchange = name
+      end
+
+      def current_lapine_exchange
+        @lapine_exchange
       end
     end
   end
