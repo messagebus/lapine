@@ -5,6 +5,8 @@ require 'lapine/annotated_logger'
 require 'lapine/consumer/config'
 require 'lapine/consumer/connection'
 require 'lapine/consumer/environment'
+require 'lapine/consumer/message'
+require 'lapine/consumer/middleware'
 require 'lapine/consumer/topology'
 require 'lapine/consumer/dispatcher'
 
@@ -29,15 +31,19 @@ module Lapine
           topology.each_binding do |q, conn, routing_key, classes|
             queue = conn.channel.queue(q, @queue_properties).bind(conn.exchange, routing_key: routing_key)
             queue.subscribe(ack: true) do |metadata, payload|
-              classes.each do |clazz|
-                Lapine::Consumer::Dispatcher.new(clazz, payload, metadata, logger).dispatch
-              end
 
-              if config.debug?
-                @message_count += 1
-                @running_message_count += 1
+              message = Consumer::Message.new(payload, metadata, logger)
+              Middleware.app.call(message) do |message|
+                classes.each do |clazz|
+                  Lapine::Consumer::Dispatcher.new(clazz, message.payload, message.metadata, logger).dispatch
+                end
+
+                if config.debug?
+                  @message_count += 1
+                  @running_message_count += 1
+                end
+                metadata.ack
               end
-              metadata.ack
 
               EventMachine.stop_event_loop if should_exit?
             end

@@ -21,6 +21,7 @@ RSpec.configure do |config|
 
   config.before :each do
     Lapine.instance_variable_set(:@config, nil)
+    Lapine::Consumer::Middleware.instance_variable_set(:@registry,nil)
 
   end
 end
