@@ -12,7 +12,8 @@ module Lapine
     end
 
     def exchange
-      reconnect unless conn && conn.connected?
+      reconnect unless @exchange && conn && conn.connected?
+      raise Lapine::NilExchange unless @exchange
       @exchange
     end
 

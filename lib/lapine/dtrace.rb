@@ -22,7 +22,7 @@ module Lapine
     end
 
     def self.fire!(probe_name, *args)
-      raise "Unknown probe: #{probe_name}" unless self.provider.probes[probe_name]
+      raise ArgumentError.new("Unknown probe: #{probe_name}") unless self.provider.probes[probe_name]
       probe = self.provider.probes[probe_name]
       probe.fire(*args) if probe.enabled?
     end

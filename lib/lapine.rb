@@ -1,13 +1,11 @@
 require 'lapine/version'
+require 'lapine/errors'
 require 'lapine/configuration'
 require 'lapine/exchange'
 require 'lapine/publisher'
 require 'lapine/annotated_logger'
 
 module Lapine
-  class UndefinedConnection < StandardError; end
-  class UndefinedExchange < StandardError; end
-
   def self.config
     @config ||= Configuration.new
   end
@@ -18,14 +16,14 @@ module Lapine
 
   def self.add_exchange(name, properties)
     connection = properties[:connection]
-    raise UndefinedConnection unless connection
-    raise UndefinedConnection unless config.connection_properties[connection]
+    raise UndefinedConnection.new("No connection for #{name}, properties: #{properties}") unless connection
+    raise UndefinedConnection.new("No connection properties for #{name}, properties: #{properties}") unless config.connection_properties[connection]
     config.exchange_properties[name] = properties
   end
 
   def self.find_exchange(name)
     exchange = config.exchange_properties[name]
-    raise UndefinedExchange unless exchange
+    raise UndefinedExchange.new("No exchange for #{name}") unless exchange
     return config.exchanges[name].exchange if config.exchanges[name]
     config.exchanges[name] = Lapine::Exchange.new(name, exchange)
     config.exchanges[name].exchange
