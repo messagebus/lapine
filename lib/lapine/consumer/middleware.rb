@@ -1,5 +1,6 @@
 require 'lapine/consumer/middleware/error_handler'
 require 'lapine/consumer/middleware/message_ack_handler'
+require 'lapine/consumer/middleware/json_decoder'
 
 module Lapine
   module Consumer
@@ -37,7 +38,8 @@ module Lapine
 
       DEFAULT_MIDDLEWARE = [
         Register.new(MessageAckHandler),
-        Register.new(ErrorHandler)
+        Register.new(ErrorHandler),
+        Register.new(JsonDecoder)
       ].freeze
 
       class << self

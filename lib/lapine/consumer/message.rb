@@ -12,6 +12,10 @@ module Lapine
         self['payload']
       end
 
+      def decoded_payload
+        self['decoded_payload']
+      end
+
       def metadata
         self['metadata']
       end

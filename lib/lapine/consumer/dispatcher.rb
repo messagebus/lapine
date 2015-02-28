@@ -10,7 +10,7 @@ module Lapine
         end
       end
 
-      attr_reader :delegate_class, :raw_payload, :metadata, :logger
+      attr_reader :delegate_class, :message, :payload
 
       def self.error_handler=(handler)
         @error_handler = handler
@@ -20,18 +20,16 @@ module Lapine
         @error_handler || DefaultErrorHandler.new
       end
 
-      def initialize(delegate_class, raw_payload, metadata, logger)
+      def initialize(delegate_class, message)
         @delegate_class = delegate_class
-        @raw_payload = raw_payload
-        @metadata = metadata
-        @logger = logger
+        @message = message
+        @payload = message.decoded_payload
       end
 
       def dispatch
-        Lapine::DTrace.fire!(:dispatch_enter, delegate_class.name, raw_payload)
-        json = Oj.load(raw_payload)
-        with_timed_logging(json) { do_dispatch(json) }
-        Lapine::DTrace.fire!(:dispatch_return, delegate_class.name, raw_payload)
+        Lapine::DTrace.fire!(:dispatch_enter, delegate_class.name, message.payload)
+        with_timed_logging(payload) { do_dispatch(payload) }
+        Lapine::DTrace.fire!(:dispatch_return, delegate_class.name, message.payload)
       end
 
       private
@@ -41,7 +39,7 @@ module Lapine
         ret = yield
         time_end = Time.now
         duration = (time_end - time) * 1000
-        logger.info "Processing rabbit message handler:#{delegate_class.name} duration(ms):#{duration} payload:#{json.inspect}"
+        message.logger.info "Processing rabbit message handler:#{delegate_class.name} duration(ms):#{duration} payload:#{json.inspect}"
         ret
       end
 
@@ -51,7 +49,7 @@ module Lapine
 
       def do_dispatch(payload)
         delegate_method_names.each do |meth|
-          return delegate_class.send(meth, payload, metadata) if delegate_class.respond_to?(meth)
+          return delegate_class.send(meth, payload, message.metadata) if delegate_class.respond_to?(meth)
         end
       end
     end

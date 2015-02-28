@@ -3,7 +3,13 @@ require 'lapine/consumer/dispatcher'
 
 RSpec.describe Lapine::Consumer::Dispatcher do
 
-  subject(:dispatcher) { Lapine::Consumer::Dispatcher.new(delegate, json, metadata, logger) }
+  subject(:dispatcher) { Lapine::Consumer::Dispatcher.new(delegate, message) }
+  let(:message) do
+    Lapine::Consumer::Message.new(json, metadata, logger).tap do |message|
+      message['decoded_payload'] = hash
+    end
+  end
+
   let(:logger) { double('logger') }
   let(:hash) { {'foo' => 'bar'} }
   let(:json) { Oj.dump(hash) }

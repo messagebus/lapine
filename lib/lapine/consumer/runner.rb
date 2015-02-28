@@ -35,7 +35,7 @@ module Lapine
               message = Consumer::Message.new(payload, metadata, logger)
               Middleware.app.call(message) do |message|
                 classes.each do |clazz|
-                  Lapine::Consumer::Dispatcher.new(clazz, message.payload, message.metadata, logger).dispatch
+                  Lapine::Consumer::Dispatcher.new(clazz, message).dispatch
                 end
 
                 if config.debug?

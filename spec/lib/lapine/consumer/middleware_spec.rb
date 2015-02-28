@@ -50,7 +50,8 @@ RSpec.describe Lapine::Consumer::Middleware do
   end
 
   let(:metadata) { double('metadata', ack: true) }
-  let(:message) { Lapine::Consumer::Message.new({}, metadata, nil) }
+  let(:payload) { '{}' }
+  let(:message) { Lapine::Consumer::Message.new(payload, metadata, nil) }
 
   describe '.add' do
     before do
