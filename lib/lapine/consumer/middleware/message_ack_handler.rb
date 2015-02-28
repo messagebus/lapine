@@ -10,6 +10,7 @@ module Lapine
 
         def call(message)
           app.call(message)
+        ensure
           message.metadata.ack
         end
       end
