@@ -5,7 +5,6 @@ module Lapine
   module Consumer
     class Dispatcher
       class DefaultErrorHandler
-
         def call(e, data, _metadata)
           $stderr.puts "Lapine::Dispatcher unable to dispatch, #{e.message}, data: #{data}"
         end
@@ -30,14 +29,8 @@ module Lapine
 
       def dispatch
         Lapine::DTrace.fire!(:dispatch_enter, delegate_class.name, raw_payload)
-        begin
-          json = Oj.load(raw_payload)
-          with_timed_logging(json) { do_dispatch(json) }
-        rescue Oj::Error => e
-          self.class.error_handler.call(e, raw_payload, metadata)
-        rescue StandardError => e
-          self.class.error_handler.call(e, json, metadata)
-        end
+        json = Oj.load(raw_payload)
+        with_timed_logging(json) { do_dispatch(json) }
         Lapine::DTrace.fire!(:dispatch_return, delegate_class.name, raw_payload)
       end
 

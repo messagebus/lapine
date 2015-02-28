@@ -49,7 +49,8 @@ RSpec.describe Lapine::Consumer::Middleware do
     end
   end
 
-  let(:message) { Hash.new }
+  let(:metadata) { double('metadata', ack: true) }
+  let(:message) { Lapine::Consumer::Message.new({}, metadata, nil) }
 
   describe '.add' do
     before do
@@ -75,25 +76,56 @@ RSpec.describe Lapine::Consumer::Middleware do
     end
   end
 
-  describe 'error handling' do
+  describe '.delete' do
+    let(:registry) { Lapine::Consumer::Middleware.registry }
+
     before do
       Lapine::Consumer::Middleware.tap do |middleware|
-        middleware.add CatchingMiddleWare
-        middleware.add RaisingMiddleware
+        middleware.add MiddlewareAddLetter, 'f'
       end
     end
 
-    it 'catches error' do
-      Lapine::Consumer::Middleware.app.call(message)
-      expect(message['error_message']).to eq('Raise')
+    it 'removes register that matches class name' do
+      expect(registry.index_of(MiddlewareAddLetter)).to be
+      Lapine::Consumer::Middleware.delete(MiddlewareAddLetter)
+      expect(registry.index_of(MiddlewareAddLetter)).not_to be
+    end
+  end
+
+  describe 'error handling' do
+    describe 'with default middleware' do
+      let(:error) { StandardError.new('doh') }
+
+      it 'runs through the dispatcher error_handler' do
+        errors = []
+        Lapine::Consumer::Dispatcher.error_handler = ->(e, data, md) {
+          errors << [e, data, md]
+        }
+        Lapine::Consumer::Middleware.app.call(message) { raise error }
+        expect(errors).to include([error, message.payload, message.metadata])
+      end
     end
 
-    it 'halts execution' do
-      expectation = double(called: true)
-      Lapine::Consumer::Middleware.app.call(message) do
-        expectation.called
+    describe 'with custom middleware' do
+      before do
+        Lapine::Consumer::Middleware.tap do |middleware|
+          middleware.add CatchingMiddleWare
+          middleware.add RaisingMiddleware
+        end
       end
-      expect(expectation).not_to have_received(:called)
+
+      it 'catches error' do
+        Lapine::Consumer::Middleware.app.call(message)
+        expect(message['error_message']).to eq('Raise')
+      end
+
+      it 'halts execution' do
+        expectation = double(called: true)
+        Lapine::Consumer::Middleware.app.call(message) do
+          expectation.called
+        end
+        expect(expectation).not_to have_received(:called)
+      end
     end
   end
 

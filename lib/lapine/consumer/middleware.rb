@@ -1,3 +1,6 @@
+require 'lapine/consumer/middleware/error_handler'
+require 'lapine/consumer/middleware/message_ack_handler'
+
 module Lapine
   module Consumer
     #
@@ -23,7 +26,20 @@ module Lapine
     #     end
     #   end
     #
-    class Middleware
+    module Middleware
+      # A Register of a middleware class that messages will be passed through
+      # on the way to being dispatched.
+      class Register < Struct.new(:klass, :args)
+        def create_new(app)
+          klass.new(app, *args)
+        end
+      end
+
+      DEFAULT_MIDDLEWARE = [
+        Register.new(MessageAckHandler),
+        Register.new(ErrorHandler)
+      ].freeze
+
       class << self
         def add(klass, *args)
           registry << [klass, args]
@@ -41,8 +57,12 @@ module Lapine
           registry.insert(idx + 1, klass, args)
         end
 
+        def delete(klass)
+          registry.delete(klass)
+        end
+
         def registry
-          @registry ||= Registry.new
+          @registry ||= Registry.new(DEFAULT_MIDDLEWARE.dup)
         end
 
         def create_chain(app)
@@ -85,6 +105,10 @@ module Lapine
           all.each(&blk)
         end
 
+        def delete(klass)
+          registry.reject! { |register| register.klass == klass }
+        end
+
         def <<(klass_args)
           insert(-1, klass_args[0], klass_args[1])
         end
@@ -96,14 +120,6 @@ module Lapine
         def insert(index, klass, args)
           raise Lapine::DuplicateMiddleware if index_of(klass)
           registry.insert(index, Register.new(klass, args))
-        end
-      end
-
-      # A Register of a middleware class that messages will be passed through
-      # on the way to being dispatched.
-      class Register < Struct.new(:klass, :args)
-        def create_new(app)
-          klass.new(app, *args)
         end
       end
     end

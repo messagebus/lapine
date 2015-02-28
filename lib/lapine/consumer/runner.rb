@@ -42,7 +42,6 @@ module Lapine
                   @message_count += 1
                   @running_message_count += 1
                 end
-                metadata.ack
               end
 
               EventMachine.stop_event_loop if should_exit?
