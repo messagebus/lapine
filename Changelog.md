@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+## 1.1.1
+
+* Fix potential thread safety issue with publisher connections to
+  RabbitMQ
+
 ## 1.1.0
 
 * Lapine consumer can be configured with middleware
