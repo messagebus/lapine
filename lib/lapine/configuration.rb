@@ -9,7 +9,7 @@ module Lapine
     end
 
     def exchanges
-      @exchanges ||= {}
+      Thread.current[:lapine_exchanges] ||= {}
     end
 
     def exchange_properties

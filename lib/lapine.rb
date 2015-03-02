@@ -34,5 +34,7 @@ module Lapine
       exchange.close!
       config.exchanges.delete exchange.name
     end
+
+    Thread.current[:lapine_exchanges] = nil
   end
 end
