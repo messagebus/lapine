@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+## 1.1.0
+
+* Lapine consumer can be configured with middleware
+  * Error handling, json decoding, and message acknowledgement now happen in middleware
+
 ## 1.0.1
 
 * Increased verbosity of errors
