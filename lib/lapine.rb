@@ -36,5 +36,6 @@ module Lapine
     end
 
     Thread.current[:lapine_exchanges] = nil
+    Thread.current[:lapine_channels] = nil
   end
 end
