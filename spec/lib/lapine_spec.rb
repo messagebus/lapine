@@ -3,7 +3,8 @@ require 'lapine'
 require 'lapine/consumer'
 
 RSpec.describe Lapine do
-  let(:connection) { double('connection', close: true) }
+  let(:connection) { double('connection', close: true, logger: logger) }
+  let(:logger) { double('bunny logger', info: true) }
   let(:connection_properties) do
     {
       host: 'someplace.com'
@@ -84,7 +85,7 @@ RSpec.describe Lapine do
     end
 
     context 'when exchange has been registered' do
-      let(:channel) { double('channel', connection: connection) }
+      let(:channel) { double('channel', connection: connection, open?: true) }
       let(:exchange) { double('exchange', channel: channel) }
 
       before do

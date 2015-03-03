@@ -12,6 +12,22 @@ module Lapine
       @connection_properties ||= {}
     end
 
+    def channels_by_exchange_id
+      @channels_by_exchange_id ||= {}
+    end
+
+    def register_channel(object_id, channel)
+      channels_by_exchange_id[object_id] = channel
+    end
+
+    def cleanup_exchange(id)
+      return unless channels_by_exchange_id[id]
+      channel = channels_by_exchange_id[id]
+      channel.connection.logger.info "Closing channel for exchange #{id}"
+      channel.close
+      channels_by_exchange_id[id] = nil
+    end
+
     def exchanges
       Thread.current[:lapine_exchanges] ||= {}
     end
