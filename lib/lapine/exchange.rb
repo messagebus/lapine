@@ -11,22 +11,16 @@ module Lapine
       @exchange_type = props.delete(:type)
     end
 
+    def connected?
+      @exchange.channel.connection.connected?
+    end
+
     def exchange
-      reconnect unless @exchange && conn && conn.connected?
-      raise Lapine::NilExchange unless @exchange
-      @exchange
-    end
-
-    def reconnect
-      connection_props = Lapine.config.connection_properties[connection_name]
-      @conn = Bunny.new(connection_props)
-      conn.start
-      channel = conn.create_channel
-      @exchange = Bunny::Exchange.new(channel, exchange_type, name, props)
-    end
-
-    def close!
-      conn.close if conn.connected?
+      @exchange ||= begin
+        conn = Lapine.config.active_connection(connection_name)
+        channel = conn.create_channel
+        Bunny::Exchange.new(channel, exchange_type, name, props)
+      end
     end
   end
 end

@@ -22,19 +22,17 @@ module Lapine
   end
 
   def self.find_exchange(name)
-    exchange = config.exchange_properties[name]
-    raise UndefinedExchange.new("No exchange for #{name}") unless exchange
-    return config.exchanges[name].exchange if config.exchanges[name]
-    config.exchanges[name] = Lapine::Exchange.new(name, exchange)
+    exchange = config.exchanges[name]
+    return exchange.exchange if (exchange && exchange.connected?)
+
+    exchange_configuration = config.exchange_properties[name]
+    raise UndefinedExchange.new("No exchange configuration for #{name}") unless exchange_configuration
+
+    config.exchanges[name] = Lapine::Exchange.new(name, exchange_configuration)
     config.exchanges[name].exchange
   end
 
   def self.close_connections!
-    config.exchanges.values.each do |exchange|
-      exchange.close!
-      config.exchanges.delete exchange.name
-    end
-
-    Thread.current[:lapine_exchanges] = nil
+    config.close_connections!
   end
 end

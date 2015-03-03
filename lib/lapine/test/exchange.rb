@@ -84,6 +84,10 @@ module Lapine
         @exchange = nil
         true
       end
+
+      def connected?
+        true
+      end
     end
   end
 end

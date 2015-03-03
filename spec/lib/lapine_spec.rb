@@ -1,8 +1,9 @@
 require 'spec_helper'
 require 'lapine'
+require 'lapine/consumer'
 
 RSpec.describe Lapine do
-  let(:connection) { double('connection') }
+  let(:connection) { double('connection', close: true) }
   let(:connection_properties) do
     {
       host: 'someplace.com'
@@ -47,18 +48,20 @@ RSpec.describe Lapine do
   end
 
   describe '.close_connections!' do
-    let(:connection1) { double('blah connection', close!: true, name: 'blah') }
-    let(:connection2) { double('blargh connection', close!: true, name: 'blargh') }
+    let(:connection1) { double('blah connection', close: true, name: 'blah') }
+    let(:connection2) { double('blargh connection', close: true, name: 'blargh') }
 
     before do
-      config.exchanges['blah'] = connection1
-      config.exchanges['blargh'] = connection2
+      config.instance_variable_set(:@active_connections, {
+          'blah' => connection1,
+          'blargh' => connection2
+        })
     end
 
     it 'calls close on each connection' do
       Lapine.close_connections!
-      expect(connection1).to have_received(:close!)
-      expect(connection2).to have_received(:close!)
+      expect(connection1).to have_received(:close)
+      expect(connection2).to have_received(:close)
     end
 
     it 'clears the exchanges' do
@@ -81,8 +84,8 @@ RSpec.describe Lapine do
     end
 
     context 'when exchange has been registered' do
-      let(:channel) { double('channel') }
-      let(:exchange) { double('exchange') }
+      let(:channel) { double('channel', connection: connection) }
+      let(:exchange) { double('exchange', channel: channel) }
 
       before do
         allow(connection).to receive(:start)

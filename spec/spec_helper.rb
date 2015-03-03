@@ -20,9 +20,13 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 
   config.before :each do
-    Thread.current[:lapine_exchanges] = nil
+    Lapine::Consumer::Dispatcher.error_handler = nil
     Lapine.instance_variable_set(:@config, nil)
     Lapine::Consumer::Middleware.instance_variable_set(:@registry,nil)
-    Lapine::Consumer::Dispatcher.error_handler = nil
+    Thread.current[:lapine_exchanges] = nil
+  end
+
+  config.after :each do
+    Lapine.close_connections!
   end
 end
