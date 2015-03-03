@@ -20,7 +20,7 @@ module Lapine
     def exchange
       @exchange ||= begin
         conn = Lapine.config.active_connection(connection_name)
-        conn.logger.info "Creating channel for #{self.object_id}"
+        conn.logger.info "Creating channel for #{self.object_id}, thread: #{Thread.current.object_id}"
         channel = conn.create_channel
         Lapine.config.register_channel(self.object_id, channel)
         Bunny::Exchange.new(channel, exchange_type, name, props)

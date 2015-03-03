@@ -21,9 +21,10 @@ module Lapine
     end
 
     def cleanup_exchange(id)
+      $stderr.puts "Closing channel for exchange #{id}, thread: #{Thread.current.object_id}"
       return unless channels_by_exchange_id[id]
       channel = channels_by_exchange_id[id]
-      channel.connection.logger.info "Closing channel for exchange #{id}"
+      channel.connection.logger.info "Closing channel for exchange #{id}, thread: #{Thread.current.object_id}"
       channel.close
       channels_by_exchange_id[id] = nil
     end
