@@ -25,8 +25,7 @@ module Lapine
       return conn if (conn && conn.connected?)
 
       @active_connections[name] = begin
-        connection_props = Lapine.config.connection_properties[name]
-        @conn = Bunny.new(connection_props).tap do |conn|
+        @conn = Bunny.new(connection_props_for(name)).tap do |conn|
           conn.start
         end
       end
@@ -36,6 +35,15 @@ module Lapine
       @active_connections.values.map(&:close)
       @active_connections = {}
       Thread.current[:lapine_exchanges] = nil
+    end
+
+    def connection_props_for(name)
+      return unless connection_properties[name]
+      connection_properties[name].dup.tap do |props|
+        if defined?(Rails)
+          props.merge!(logger: Rails.logger)
+        end
+      end
     end
   end
 end
