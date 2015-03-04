@@ -21,7 +21,6 @@ module Lapine
     end
 
     def cleanup_exchange(id)
-      $stderr.puts "Closing channel for exchange #{id}, thread: #{Thread.current.object_id}"
       return unless channels_by_exchange_id[id]
       channel = channels_by_exchange_id[id]
       channel.connection.logger.info "Closing channel for exchange #{id}, thread: #{Thread.current.object_id}"
@@ -29,8 +28,12 @@ module Lapine
       channels_by_exchange_id[id] = nil
     end
 
+    # Exchanges need to be saved in a thread-local variable, rather than a fiber-local variable,
+    # because in the context of some applications (such as Sidekiq, which uses Celluloid) individual
+    # bits of work are done in fibers that are immediately reaped.
     def exchanges
-      Thread.current[:lapine_exchanges] ||= {}
+      Thread.current.thread_variable_get(:lapine_exchanges) ||
+        Thread.current.thread_variable_set(:lapine_exchanges, {})
     end
 
     def exchange_properties
@@ -51,7 +54,7 @@ module Lapine
     def close_connections!
       @active_connections.values.map(&:close)
       @active_connections = {}
-      Thread.current[:lapine_exchanges] = nil
+      Thread.current.thread_variable_set(:lapine_exchanges, nil)
     end
 
     def connection_props_for(name)

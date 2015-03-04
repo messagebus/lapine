@@ -23,7 +23,7 @@ RSpec.configure do |config|
     Lapine::Consumer::Dispatcher.error_handler = nil
     Lapine.instance_variable_set(:@config, nil)
     Lapine::Consumer::Middleware.instance_variable_set(:@registry,nil)
-    Thread.current[:lapine_exchanges] = nil
+    Thread.current.thread_variable_set(:lapine_exchanges, nil)
   end
 
   config.after :each do
