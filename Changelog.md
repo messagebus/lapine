@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+## 1.1.2
+
+* Exchanges are saved using thread variables instead of fiber variables
+* Move memoization of connections and exchanges to Configuration
+
 ## 1.1.1
 
 * Fix potential thread safety issue with publisher connections to
