@@ -13,7 +13,10 @@ module Lapine
     end
 
     def connected?
-      @exchange.channel.connection.connected? &&
+      @exchange &&
+        @exchange.channel &&
+        @exchange.channel.connection &&
+        @exchange.channel.connection.connected? &&
         @exchange.channel.open?
     end
 
