@@ -82,6 +82,10 @@ module Lapine
         config[:logfile]
       end
 
+      def delete_queues
+        yaml_config['delete_queues'] || []
+      end
+
       def queues
         yaml_config['queues'] || []
       end

@@ -39,11 +39,13 @@ RSpec.describe Lapine::Consumer::Runner do
     connection_properties: connection_properties,
     require: [],
     queues: queues,
+    delete_queues: delete_queues,
     topics: ['testing.topic'],
     debug?: true,
     transient?: true) }
   let(:connection_properties) { {host: '127.0.0.1', port: 5672, ssl: false, vhost: '/', username: 'guest', password: 'guest'} }
   let(:message) { Oj.dump({'pay' => 'load'}) }
+  let(:delete_queues) { [] }
 
   describe '#run' do
     before do
