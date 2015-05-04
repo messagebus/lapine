@@ -48,6 +48,7 @@ module Lapine
             end
 
             EventMachine.add_timer(0.5) do
+              logger.info "Lapine::Consumer unbinding #{queue.name} from exchange: #{exchange.name}, routing_key: #{routing_key}"
               queue.unbind(conn.exchange, routing_key: routing_key)
             end
           end
@@ -110,13 +111,17 @@ module Lapine
       def schedule_queue_deletion
         EventMachine.add_timer(30) do
           queues_to_delete.each do |queue|
+            logger.info "Lapine::Consumer checking #{queue.name} for deletion"
+
             begin
               queue.status do |message_count, consumer_count|
                 if message_count == 0
+                  logger.info "Lapine::Consumer deleting #{queue.name}"
                   queue.unsubscribe
                   queue.delete unless config.transient?
                   queues_to_delete.delete(queue)
                 else
+                  logger.info "Lapine::Consumer skipping #{queue.name} deletion, message count: #{message_count}"
                   schedule_queue_deletion
                 end
               end
