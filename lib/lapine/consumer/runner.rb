@@ -37,7 +37,7 @@ module Lapine
             queues << queue
           end
 
-          topology.each_queue_to_delete do |queue, conn, _routing_key, handlers|
+          topology.each_queue_to_delete do |q, conn, routing_key, handlers|
             # if queue does not exist in RabbitMQ, skip processing
             # else
             queue = conn.channel.queue(q, @queue_properties)
@@ -48,7 +48,7 @@ module Lapine
             end
 
             EventMachine.add_timer(0.5) do
-              queue.unbind(conn.exchange)
+              queue.unbind(conn.exchange, routing_key: routing_key)
             end
           end
 
