@@ -48,7 +48,7 @@ module Lapine
             end
 
             EventMachine.add_timer(0.5) do
-              logger.info "Lapine::Consumer unbinding #{queue.name} from exchange: #{exchange.name}, routing_key: #{routing_key}"
+              logger.info "Lapine::Consumer unbinding #{queue.name} from exchange: #{conn.exchange.name}, routing_key: #{routing_key}"
               queue.unbind(conn.exchange, routing_key: routing_key)
             end
           end
