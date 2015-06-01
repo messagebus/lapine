@@ -1,3 +1,3 @@
 module Lapine
-  VERSION = '1.99.0'
+  VERSION = '2.0.0'
 end
