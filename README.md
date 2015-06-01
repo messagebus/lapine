@@ -1,6 +1,8 @@
 Lapine
 ======
 
+[![Gem Version](https://badge.fury.io/rb/lapine.svg)](http://badge.fury.io/rb/lapine)
+
 Speak to RabbitMQ. This gem serves as a wrapper for publishing messages
 to RabbitMQ via the Bunny gem, and for consuming messages using the AMQP
 gem.
