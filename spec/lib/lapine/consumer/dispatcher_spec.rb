@@ -13,7 +13,7 @@ RSpec.describe Lapine::Consumer::Dispatcher do
   let(:logger) { double('logger') }
   let(:hash) { {'foo' => 'bar'} }
   let(:json) { Oj.dump(hash) }
-  let(:metadata) { double('metadata') }
+  let(:metadata) { double('metadata', routing_key: 'routing_key') }
   let(:delegate) { double('delegate', name: 'ClassName') }
 
   let(:caught_errors) { [] }

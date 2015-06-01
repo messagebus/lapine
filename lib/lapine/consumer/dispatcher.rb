@@ -39,7 +39,7 @@ module Lapine
         ret = yield
         time_end = Time.now
         duration = (time_end - time) * 1000
-        message.logger.info "Processing rabbit message handler:#{delegate_class.name} duration(ms):#{duration} payload:#{json.inspect}"
+        message.logger.info "Processing rabbit message handler:#{delegate_class.name} duration(ms):#{duration} routing_key:#{message.routing_key} payload:#{json.inspect}"
         ret
       end
 

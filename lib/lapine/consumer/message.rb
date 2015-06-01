@@ -23,6 +23,10 @@ module Lapine
       def logger
         self['logger']
       end
+
+      def routing_key
+        metadata.routing_key
+      end
     end
   end
 end
