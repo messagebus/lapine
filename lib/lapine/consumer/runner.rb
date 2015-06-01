@@ -40,7 +40,7 @@ module Lapine
           topology.each_queue_to_delete do |q, conn, routing_key, handlers|
             # if queue does not exist in RabbitMQ, skip processing
             # else
-            queue = conn.channel.queue(q, @queue_properties)
+            queue = conn.channel.queue(q, @queue_properties.merge(durable: false))
             queues_to_delete << queue
 
             queue.subscribe(ack: true) do |metadata, payload|
@@ -85,6 +85,7 @@ module Lapine
       def queue_properties
         {}.tap do |props|
           props.merge!(auto_delete: true) if config.transient?
+          props.merge!(durable: true) unless config.transient?
         end
       end
 

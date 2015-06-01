@@ -1,6 +1,27 @@
 Change Log
 ==========
 
+## 2.0.0
+
+**BREAKING CHANGES**
+
+Queues are now declared as `durable: true`. This breaks the ability of consumers to connect to existing
+queues in a way that fails silently in the `ruby-amqp` gem.
+
+Migration strategy:
+
+* Update gemfile to use version `1.99.0`
+* All queues will need to be renamed, so that they can be declared anew with `durable: true`
+* Old queues should be deleted with `delete_queues`
+* Update gemfile to use version `2.0.0`
+
+## 1.99.0 - Migration version to 2.0.0
+
+**BREAKING CHANGES**
+
+* `queues` are declared as `durable: true`
+* `delete_queues` are declared as `durable: false`
+
 ## 1.2.2
 
 * Add routing key to dispatcher log
