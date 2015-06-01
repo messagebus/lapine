@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+## 1.2.2
+
+* Add routing key to dispatcher log
+
+## 1.2.0
+
+* Queues can be deleted by using `delete_queues` to configuration YAML file
+
 ## 1.1.2
 
 * Exchanges are saved using thread variables instead of fiber variables
