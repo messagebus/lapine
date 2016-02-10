@@ -1,10 +1,10 @@
 require 'amqp'
 require 'digest'
+require 'environmenter'
 require 'eventmachine'
 require 'lapine/annotated_logger'
 require 'lapine/consumer/config'
 require 'lapine/consumer/connection'
-require 'lapine/consumer/environment'
 require 'lapine/consumer/message'
 require 'lapine/consumer/middleware'
 require 'lapine/consumer/topology'
@@ -23,7 +23,7 @@ module Lapine
 
       def run
         handle_signals!
-        Consumer::Environment.new(config).load!
+        Environmenter::Loader.new(config).load!
         logger.info 'starting Lapine::Consumer'
 
         @queue_properties = queue_properties
