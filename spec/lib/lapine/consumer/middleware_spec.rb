@@ -72,7 +72,7 @@ RSpec.describe Lapine::Consumer::Middleware do
           Lapine::Consumer::Middleware.tap do |middleware|
             middleware.add MiddlewareAddLetter, 'f'
           end
-        }.to raise_error(Lapine::DuplicateMiddleware)
+        }.to raise_error(Middlewear::DuplicateMiddleware)
       end
     end
   end
@@ -96,6 +96,12 @@ RSpec.describe Lapine::Consumer::Middleware do
   describe 'error handling' do
     describe 'with default middleware' do
       let(:error) { StandardError.new('doh') }
+
+      before do
+        Lapine::Consumer::Middleware::DEFAULT_MIDDLEWARE.each do |mw|
+          Lapine::Consumer::Middleware.add(mw)
+        end
+      end
 
       it 'runs through the dispatcher error_handler' do
         errors = []

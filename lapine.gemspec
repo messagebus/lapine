@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'amqp'
   spec.add_dependency 'bunny'
   spec.add_dependency 'environmenter', '~> 0.1'
+  spec.add_dependency 'middlewear', '~> 0.1'
   spec.add_dependency 'mixlib-cli'
   spec.add_dependency 'oj'
   spec.add_dependency 'ruby-usdt', '>= 0.2.2'
