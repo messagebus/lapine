@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['dev@wanelo.com']
   spec.summary       = %q{Talk to rabbits}
   spec.description   = %q{Talk to rabbits}
-  spec.homepage      = 'https://github.com/wanelo/lapine'
+  spec.homepage      = 'https://github.com/messagebus/lapine'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")
